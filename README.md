@@ -1,5 +1,39 @@
 
 # idris2
+
+# install a pack ?
+
+https://github.com/stefan-hoeck/idris2-pack/blob/main/INSTALL.md
+
+follow these instructions may rebuild idris2 several times
+
+```
+Package Collection  : nightly-251202
+Idris2 URL          : https://github.com/idris-lang/Idris2
+Idris2 Version      : 0.8.0
+Idris2 Commit       : acde1c9260fffb140525fea191a17cd23368c61c
+Scheme Executable   : scheme
+Pack Commit         : bdd69a9a403dc17c10bfd39978d8a63c12085f23
+Installed Libraries : base
+                      contrib
+                      idris2
+                      linear
+                      network
+                      prelude
+                      test
+
+export PATH=~/.local/bin:$PATH
+
+pack update
+
+pack new lib tut
+# this will create a working directory called tut for tutorial to begin !
+
+```
+
+
+# hacking
+
 idris2 play ground
 
 cannot see file contents as it is an IO action but idris is like haskell , lazy , so
