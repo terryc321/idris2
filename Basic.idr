@@ -12,6 +12,8 @@ import Data.List
 --- import Data.File
 import System.File
 
+import Data.IORef
+
 -- natural numbers 0 1 2 3 ...
 -- :doc Nat
 
@@ -258,7 +260,10 @@ dial_right2 d n =
     in if r >= 100 then (r - 100)
     else r
     
-            
+
+-- this turns the dial , if after turn dial d2 is zero then increment counter , 
+-- otherwise we move onto next instruction
+-- typical state machine                        
 iter2 : List Turn -> Int -> Int -> Int
 iter2 [] d c = c
 iter2 ((Left n) :: xs) d c = let d2 = dial_left2 d n 
@@ -267,15 +272,63 @@ iter2 ((Left n) :: xs) d c = let d2 = dial_left2 d n
 iter2 ((Right n) :: xs) d c = let d2 = dial_right2 d n 
                               in if d2 == 0 then iter2 xs d2 (c + 1)
                                  else iter2 xs d2 c                                
-                                
+                        
+
+{--
+do we need to intercept passing through zero
+not enough to simply `mod` it any more 
+
+how organise routines so it will notice it is at dial=0 ?
+
+assumption Left n , Right n are always positive n ??
+how can we enforce this 
+--}
+
+partial iter3 : List Turn -> Int -> Int -> Int
+partial iter4 : List Turn -> Int -> Int -> Int
+
+iter3 xs d c = if d == 0 then iter4 xs 0 (c + 1) 
+               else iter4 xs d c                
+--               
+iter4 [] d c = c 
+iter4 ((Left n) :: xs) d c = if n == 0 then iter3 xs d c
+                             else let d2 = d - 1 
+                                  in if d2 < 0 then iter3 ((Left (n - 1)) :: xs) 99 c
+                                     else iter3 ((Left (n - 1)) :: xs) d2 c
+                                     
+iter4 ((Right n) :: xs) d c =if n == 0 then iter3 xs d c
+                             else let d2 = d + 1 
+                                  in if d2 > 99 then iter3 ((Right (n - 1)) :: xs) 0 c
+                                     else iter3 ((Right (n - 1)) :: xs) d2 c
+                                     
 
 partial example1 : Int
 example1 = let d = 50
                c = 0 
            in iter2 exampleDirs d c 
-                          
 
 
+--- WRONG ANSWER !!!                                                     
+partial example1b : Int
+example1b = let d = 50
+                c = 0 
+            in iter3 exampleDirs d c 
+                                                                              
+
+
+iter5 : List Turn -> IO ()
+iter5 xs = do  
+             ref <- newIORef 0
+             let g = (\x ref => do let val = readIORef ref
+                                         writeIORef ref (x + val))
+             let _ = g 1
+             let _ = g 2
+             let _ = g 3
+             val <- readIORef ref  
+             putStrLn (show val)
+             
+          
+           
 
                 
 
