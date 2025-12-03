@@ -316,16 +316,16 @@ example1b = let d = 50
                                                                               
 
 
-iter5 : List Turn -> IO ()
-iter5 xs = do  
-             ref <- newIORef 0
-             let g = (\x ref => do let val = readIORef ref
-                                         writeIORef ref (x + val))
-             let _ = g 1
-             let _ = g 2
-             let _ = g 3
-             val <- readIORef ref  
-             putStrLn (show val)
+-- iter5 : List Turn -> IO ()
+-- iter5 xs = do  
+--              ref <- newIORef 0
+--              let g = (\x ref => do let val = readIORef ref
+--                                          writeIORef ref (x + val))
+--              let _ = g 1
+--              let _ = g 2
+--              let _ = g 3
+--              val <- readIORef ref  
+--              putStrLn (show val)
              
           
            

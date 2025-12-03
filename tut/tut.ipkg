@@ -13,10 +13,10 @@ authors = "terry"
 -- langversion
 
 -- packages to add to search path
--- depends =
+depends = base, contrib, idris2
 
 -- modules to install
-modules = Tut
+modules = Tutorial , Tutorial.Intro
 
 -- main file (i.e. file to load at REPL)
 -- main =

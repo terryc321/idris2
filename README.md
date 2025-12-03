@@ -1,6 +1,14 @@
 
 # idris2
 
+# tut
+
+tut directory holds community idris notes from below 
+
+https://idris-community.github.io/idris2-tutorial/Tutorial/Intro.html
+
+
+
 # install a pack ?
 
 https://github.com/stefan-hoeck/idris2-pack/blob/main/INSTALL.md
@@ -28,6 +36,14 @@ pack update
 
 pack new lib tut
 # this will create a working directory called tut for tutorial to begin !
+
+cd tut
+
+# add this line to tut.ipkg
+depends = base, contrib, idris2
+
+# make documentation if thats worth it
+idris2 --mkdoc *.ipkg
 
 ```
 
