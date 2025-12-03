@@ -9,6 +9,8 @@ module Basic
 
 import Data.String 
 import Data.List
+--- import Data.File
+import System.File
 
 -- natural numbers 0 1 2 3 ...
 -- :doc Nat
@@ -170,12 +172,22 @@ reduce_just : (List (Maybe Turn)) -> List Turn
 reduce_just [] = []
 reduce_just ((Just x) :: y) = x :: (reduce_just y)
 reduce_just (Nothing :: y) = reduce_just y 
-                 
+              
+
+partial dir_str_to_turns : List String -> List Turn
+dir_str_to_turns xs = let x = map fex2 xs
+                          y = filter is_something (x)
+                          z = reduce_just (y)
+                          in (z) 
+                                                
+                    
+                          
 partial exampleDirs : List Turn 
-exampleDirs = let x = map fex2 example
-                  y = filter is_something (x)
-                  z = reduce_just (y)
-                  in (z) 
+exampleDirs = dir_str_to_turns example 
+-- let x = map fex2 example
+--                   y = filter is_something (x)
+--                   z = reduce_just (y)
+--                   in (z) 
                                       
 -- represent current state of dial 
 -- (1) points at  (2) number zeros met (3) moves to go
@@ -186,18 +198,17 @@ data Dial = State Int Int (List Turn)
 -- partial exampleTurns : Turns
 -- exampleTurns = MkTurns exampleDirs
 
-partial step : Dial -> Dial
-step (State d c []) = State d c [] -- no more
-step (State 0 c ((Left 0) :: ys)) = step (State 0 (c + 1) ys)  -- consume
-step (State 0 c ((Right 0) :: ys)) = step (State 0 (c + 1) ys)
-step (State d c ((Left 0) :: ys)) = step (State d c ys)  -- consume
-step (State d c ((Right 0) :: ys)) = step (State d c ys)
-step (State 1 c ((Left n) :: ys)) = step (State 0 (c + 1) ((Left (n - 1)) :: ys)) -- inc
-step (State 99 c ((Right n) :: ys)) = step (State 0 (c + 1) ((Right (n - 1)) :: ys)) -- inc
-step (State 0 c ((Left n) :: ys)) = step (State 99 c ((Left (n - 1)) :: ys)) -- wrap
-step (State d c ((Left n) :: ys)) = step (State (d - 1) c ((Left (n - 1)) :: ys)) -- click
-step (State d c ((Right n) :: ys)) = step (State (d + 1) c ((Right (n - 1)) :: ys)) -- click
-
+-- partial step : Dial -> Dial
+-- step (State d c []) = State d c [] -- no more
+-- step (State 0 c ((Left 0) :: ys)) = step (State 0 (c + 1) ys)  -- consume
+-- step (State 0 c ((Right 0) :: ys)) = step (State 0 (c + 1) ys)
+-- step (State d c ((Left 0) :: ys)) = step (State d c ys)  -- consume
+-- step (State d c ((Right 0) :: ys)) = step (State d c ys)
+-- step (State 1 c ((Left n) :: ys)) = step (State 0 (c + 1) ((Left (n - 1)) :: ys)) -- inc
+-- step (State 99 c ((Right n) :: ys)) = step (State 0 (c + 1) ((Right (n - 1)) :: ys)) -- inc
+-- step (State 0 c ((Left n) :: ys)) = step (State 99 c ((Left (n - 1)) :: ys)) -- wrap
+-- step (State d c ((Left n) :: ys)) = step (State (d - 1) c ((Left (n - 1)) :: ys)) -- click
+-- step (State d c ((Right n) :: ys)) = step (State (d + 1) c ((Right (n - 1)) :: ys)) -- click
 
 -- partial step : Dial -> Dial
 -- step (State d c []) = State d c [] -- no more
@@ -209,14 +220,60 @@ step (State d c ((Right n) :: ys)) = step (State (d + 1) c ((Right (n - 1)) :: y
 -- step (State d c ((Left n) :: ys)) = step (State (d - 1) c ((Left (n - 1)) :: ys)) -- click
 -- step (State d c ((Right n) :: ys)) = step (State (d + 1) c ((Right (n - 1)) :: ys)) -- click
 
+-- partial start : Dial
+-- start = State 50 0 exampleDirs
+
+-- partial simple1 : Dial
+-- simple1 = State 0 0 [Left 1 , Right 1 , Left 1 , Right 1]
+
+-- how do i handle state in a functional way ?
+-- exampleDirs is a list of directions
+-- [Left 68, Left 30, Right 48, Left 5, Right 60, Left 55, Left 1, Left 99, Right 14, Left 82]
+-- initial state dial points at 50 
+-- we want to know when after complete instruction 
+-- is the dial pointing at 0 , more specifically where is the dial pointing to ?
+-- 
+
+-- example d = 50 n = 68
+-- wraps every 100 
+dial_left : Int -> Int -> Int
+dial_left d n = 
+ if n > 100 then dial_left d (n - 100)
+ else let r = d - n 
+      in if r < 0 then 100 + r 
+         else r
 
 
-partial start : Dial
-start = State 50 0 exampleDirs
+dial_left2 : Int -> Int -> Int
+dial_left2 d n = 
+ let n2 = n `mod` 100 
+ in let r = d - n2 
+    in if r < 0 then 100 + r 
+    else r
 
-partial simple1 : Dial
-simple1 = State 0 0 [Left 1 , Right 1 , Left 1 , Right 1]
+dial_right2 : Int -> Int -> Int
+dial_right2 d n = 
+ let n2 = n `mod` 100 
+ in let r = d + n2 
+    in if r >= 100 then (r - 100)
+    else r
+    
+            
+iter2 : List Turn -> Int -> Int -> Int
+iter2 [] d c = c
+iter2 ((Left n) :: xs) d c = let d2 = dial_left2 d n 
+                             in if d2 == 0 then iter2 xs d2 (c + 1)
+                                else iter2 xs d2 c
+iter2 ((Right n) :: xs) d c = let d2 = dial_right2 d n 
+                              in if d2 == 0 then iter2 xs d2 (c + 1)
+                                 else iter2 xs d2 c                                
+                                
 
+partial example1 : Int
+example1 = let d = 50
+               c = 0 
+           in iter2 exampleDirs d c 
+                          
 
 
 
@@ -260,10 +317,43 @@ prim__strIndex "adsf" -2315878240734227446
 -- fex _ = []
 
 
+-- idris Either
+-- Right x -> success contains actual result
+-- Left err -> contains error value
 
+-- contents : IO ()
+-- contents = do
+--       Right data <- readFile "input.txt"
+--         | Left err => do         
+--               printLn ("Error: " ++ show err) 
+--               pure () 
+--       putStrLn data
 
-main : IO ()
+-- "data" is a keyword ! 
+-- like ocaml "in" is a keyword ! 
+  
+  -- r <- iter2 (dir_str_to_turns w) 50 0
+  -- putStrLn "the result you want is " ++ (show r) ++ " . okay."
+  -- putStrLn !"Debug: x = \{show (words content)}" $ -- magic line
+  -- handle <- openFile "../input.txt" Read
+  -- contents <- hGetContents handle
+  -- putStrLn contents
+  -- putStrLn ""
+  -- putStrLn (con)
+  -- let w = ["L68"] -- bare let inside do block
+  -- putStrLn "Hello , Idris2 World !"
+  
+
+partial main : IO ()
 main = do 
-  putStrLn "Hello , Idris2 World !"
+     result <- readFile "input.txt"
+     case result of
+       Left err      => putStrLn ("Error: " ++ show err)
+       Right con => do let w = words con
+                       let r = iter2 (dir_str_to_turns w) 50 0
+                       putStrLn ("the result you want is " ++ (show r) ++ " . okay.")
+
+            
+  
   
 
