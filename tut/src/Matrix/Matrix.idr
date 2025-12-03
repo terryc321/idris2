@@ -10,7 +10,7 @@ Transpose
 
 ---}
 
-module Matrix
+module Matrix.Matrix
 
 import Data.Vect
 
@@ -25,9 +25,17 @@ Addition
 
 --}
 
+-- map2 : Functor f => (a -> b -> c) -> f a -> f b
+map2 f x y = if x == [] then []
+             else if y == [] then []
+             else (f x y) :: (map2 f xs ys)
+             
+
+
+
 -- vec map ?
 matrix_add : Vect n (Vect m a) -> Vect n (Vect m a) -> Vect n (Vect m a)
-matrix_add a b = ?
+-- matrix_add a b = map (\r => (\r2 => map (+) r r2
 
 
 e1 : Vect 2 Int

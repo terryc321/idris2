@@ -53,4 +53,17 @@ cols a x rows b
 (defun demo ()
   (mult-matrix a (transpose-matrix b)))
 
- 
+
+;; simply want to apply f to two things rather than just regular map f xs
+;; static typing demands we have a different procedure - different signature 
+(defun map2 (f xs ys)
+  (cond
+    ((null xs) nil)
+    ((null ys) nil)
+    (t (cons (funcall f (car xs) (car ys))
+	     (map2 f (cdr xs)(cdr ys))))))
+
+(defun demo2 ()
+  (map2 #'+ '(1 2 3) '(4 5 6)))
+
+
