@@ -364,12 +364,15 @@ countX xs =
 --}
 
 -- with ai slop help 
+
+-- works !! 
 countX : Vect n Char -> Nat
 countX =
   foldr
     (\ch, acc => if ch == 'x' then S acc else acc)
     Z
 
+-- works !!
 countStateX : State n -> Nat
 countStateX st = countX (text st)
 
@@ -379,6 +382,7 @@ countStateX st = countX (text st)
 
 -- if it grows then size is expanded by one element --  (S n)
 
+-- works !!
 growMe : {n : Nat} -> State n -> IO (Maybe (State (S n)))
 growMe {n} st = case indexToFin 2 st of 
                      Nothing => do  putStrLn "insert failed !"
@@ -388,7 +392,7 @@ growMe {n} st = case indexToFin 2 st of
                                     putStrLn $ "after : " ++ show (countStateX st')
                                     pure (Just st')
 
-
+-- works !
 exerciseBuffer : {n : Nat} -> Integer -> State n -> IO () 
 exerciseBuffer 0 _  = putStrLn ""
 exerciseBuffer v st = do  let v1 = gotoEnd st 
@@ -398,11 +402,11 @@ exerciseBuffer v st = do  let v1 = gotoEnd st
                                Nothing =>  do let v4 = gotoStart v2
                                               let v5 = gotoEnd v4
                                               putStrLn "ok.we cycled."
-                                              exerciseBuffer (v-1) v5     
+                                              -- exerciseBuffer (v-1) v5     
                                Just st' => do let v4 = gotoStart st'
                                               let v5 = gotoEnd v4
                                               putStrLn "ok.we cycled."
-                                              exerciseBuffer (v-1) v5     
+                                              -- exerciseBuffer (v-1) v5     
 
                               
      
