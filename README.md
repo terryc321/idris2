@@ -1,6 +1,22 @@
 
 # idris2
 
+# editor 
+[editor notes](editor/)
+
+if we had a buffer of text as a list and some index into it , 
+we can only sort of move forwards one step at a time as AI said i should use
+natural numbers 
+very limited 
+
+we can move about the list forward , but we cant really go back one character 
+the AI says we should use a zipper instead where the cursor position is 
+implicit rather than explicit , 
+heaven knows how we find out where the cursor is , 
+
+we soldier on ...
+
+
 # tut
 
 tut directory holds community idris notes from below 
