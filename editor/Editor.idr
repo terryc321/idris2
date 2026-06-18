@@ -205,17 +205,17 @@ entry n = do let mfin = F.natToFin n
 
 
 
-exerciseBuffer : Nat -> Fin (S n) -> IO () 
-exerciseBuffer Z     k   = putStrLn ""
-exerciseBuffer a     k   = do let st = MkState (Data.Vect.replicate a 'x') a  
-                              let v  = gotoEnd st 
-                              let v2 = gotoStart st   
-                              let v3 = gotoEnd st
-                              let v4 = gotoStart st 
-                              let v5 = gotoEnd st
-                              putStrLn $ "put cursor at end for buffer number " ++ show n
-                              exerciseBuffer r k 
 --}
+
+exerciseBuffer : {n : Nat} -> Integer -> State n -> IO () 
+exerciseBuffer 0 _  = putStrLn ""
+exerciseBuffer v st = do  let v1 = gotoEnd st 
+                          let v2 = gotoStart st   
+                          let v3 = gotoEnd st
+                          let v4 = gotoStart st 
+                          let v5 = gotoEnd st
+                          putStrLn $ "put cursor at end for buffer number " ++ show v
+                          exerciseBuffer (v - 1) st 
 
 
 
@@ -234,6 +234,61 @@ test3 = do putStr $ "enter a number : "
            let n : Nat 
                n = cast line 
            putStrLn $ "you make " ++ show n 
+           
+           
+-- natToFin 3 10     
+mkState : (n : Nat) -> State n
+mkState n = MkState (Data.Vect.replicate n 'x') FZ       
+
+test4 : IO () 
+test4 = do putStr $ "enter a number : "
+           line <- getLine 
+           let q : Nat 
+               q = cast line            
+           putStrLn $ "you make " ++ show q 
+           let v = mkState q
+           putStrLn $ "all done"           
+           
+           
+test5 : IO () 
+test5 = do putStr $ "enter a number : "
+           line <- getLine 
+           let q : Nat 
+               q = cast line            
+           putStrLn $ "you make " ++ show q 
+           let v = MkState (Data.Vect.replicate q 'x') FZ       
+           putStrLn $ "all done"           
+           
+
+test6 : IO () 
+test6 = do putStr $ "enter a number : "
+           line <- getLine 
+           let q : Nat 
+               q = cast line            
+           putStrLn $ "you make " ++ show q 
+           let v = mkState q
+           _ <- exerciseBuffer 100 v 
+           putStrLn $ "all done"           
+           
+                     
+                                                               
+           
+           -- let v = {q:Nat} -> MkState (Data.Vect.replicate q 'x') FZ
+           -- let vlen = V.length v
+           -- let st = MkState v vlen 
+           -- putStrLn $ "all done"           
+                 
+           -- putStrLn $ "you make " ++ show q 
+           -- let v = Data.Vect.replicate q 'x'
+           -- let vlen = V.length v
+           -- let st = MkState v vlen 
+           -- putStrLn $ "all done"           
+           
+           -- let fin = F.natToFin 0 n --(V.length v)
+           -- case fin of 
+           --  Nothing => putStrLn "i give up fin failed"
+           --  Just vfin => do let st = MkState v vlen
+           --                  putStrLn $ "all done"
            
            
                                  
