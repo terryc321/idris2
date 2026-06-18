@@ -74,6 +74,8 @@ demo2 = map2 (+) [1, 2, 3] [4, 5, 6]
 
 add : Num a => Vect n (Vect m a) -> Vect n (Vect m a) -> Vect n (Vect m a)
 add a b = map2 (\r => (\r2 => map2 (+) r r2)) a b
+
+
 -- add a b = map2 (map2 (+)) ??
 
 
