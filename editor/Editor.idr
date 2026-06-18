@@ -261,12 +261,25 @@ isEven : Nat -> Bool
 
 -- step 3 : 
 isEven : Nat -> Bool 
-isEven k = ?isEven_rhs
+isEven Z = ?isEven_rhs
+isEven (S Z) = ?isEven_rhs2
+
+
 
 --}
 
-isEven : Nat -> Bool 
-isEven k = ?isEven_rhs
+-- important note --
+-- recursive functions MUST be defined using mutual keyword 
+mutual 
+       isOdd : Nat -> Bool 
+       isOdd Z = False
+       isOdd (S n) = isEven n
+
+       isEven : Nat -> Bool 
+       isEven Z = True
+       isEven (S n) = isOdd n
+
+
 
 {--
 
