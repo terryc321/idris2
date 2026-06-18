@@ -16,6 +16,8 @@ import Data.Fin as F
 import Data.Vect as V 
 import System.Clock as C 
 import Prelude
+import Data.String as S 
+
 
 -- STATE
 -- text is some container of length n , cursor is a finite natural number 
@@ -69,12 +71,24 @@ natDec (S n) = n
 
 
 -- insert a character at position i
-insertAt : State n -> Fin (S n) -> Char -> State (S n)
+insertAt : {n : Nat} -> State n -> Fin (S n) -> Char -> State (S n)
 insertAt st i ch =
    let text' = (V.insertAt i ch (text st))
        cursor' = F.shift 1 (cursor st)
    in MkState text' cursor' 
 
+
+-- we define a type , now we can create another function uses this to generate a type 
+StringOrInt : Bool -> Type
+StringOrInt False = String
+StringOrInt True = Int
+
+big : (aBool : Bool) -> StringOrInt aBool 
+big True = 12
+big False = "i'm false" 
+ 
+ 
+ 
 
 {--
 λΠ> fromList ['a','b','c']
@@ -208,17 +222,91 @@ entry n = do let mfin = F.natToFin n
 --}
 
 
+e0 : Integer 
+e0 = let m : Integer 
+         m = Prelude.cast "123"
+     in m 
+
+-- lets make a tuple of the results from Prelude.cast  
+-- the argument is Prelude.cast "123" resolves to Just 123 is proven false
+-- the argument is Prelude.cast "abc" resolves to Nothing is proven false
+-- see results of e2 
+e2 : (Integer,Integer)
+e2 = let m : Integer 
+         m = Prelude.cast "123"
+         y : Integer 
+         y = Prelude.cast "abc"
+     in (m,y) 
+          
+
+e3 : (Integer,Integer)
+e3 = let m : Maybe Integer 
+         m = S.parseInteger "123"
+         y : Maybe Integer 
+         y = S.parseInteger "abc"
+     in case (m,y) of 
+        (Just a , Just b) => (a,b)
+        _ => (0,0)
+  
+
+{-- start with the type level definition of isEven                   
+
+-- step 1 : the type level definition 
+isEven : Nat -> Bool 
+
+-- step 2 : add a clause 
+isEven : Nat -> Bool 
+--  ^
+--put point on the isEven word and type C-c C-s idris2-add-clause 
+
+-- step 3 : 
+isEven : Nat -> Bool 
+isEven k = ?isEven_rhs
+
+--}
+
+isEven : Nat -> Bool 
+isEven k = ?isEven_rhs
+
+{--
+
+growMe : {n : Nat} -> State n -> IO ()
+growMe st = 
+ let con = (V.length (text st)) >= 2 
+ in case con of 
+   False => putStrLn "too small"
+   True  => do let st' = Editor.insertAt st (FS FZ) 'a'
+               putStrLn "inserted"
+               
+--}
+
+
+
+
+{--
+growMe : {n : Nat} -> State n -> IO ()
+growMe {n} st = do ?check_state_st_greater_than_2
+                   v = Editor.insertAt st 2 'a'
+                   putStrLn "i did it!"
+            
+
+
 exerciseBuffer : {n : Nat} -> Integer -> State n -> IO () 
 exerciseBuffer 0 _  = putStrLn ""
 exerciseBuffer v st = do  let v1 = gotoEnd st 
                           let v2 = gotoStart v1 
-                          -- let v2b = Editor.insertAt v2 2 'a'
-                          let v3 = gotoEnd v2 --v2b
-                          -- let v3b = Editor.insertAt 3 v3 'a'                          
-                          let v4 = gotoStart v3 --v3b 
-                          let v5 = gotoEnd v4
-                          putStrLn $ "put cursor at end for buffer number " ++ show v
-                          exerciseBuffer (v - 1) v4
+                          growMe v2
+                          
+--}                          
+                          
+                          -- let v2b : State (S n) 
+                          --     v2b = Editor.insertAt v2 2 'a'
+                          -- let v3 = gotoEnd v2 --v2b
+                          -- -- let v3b = Editor.insertAt 3 v3 'a'                          
+                          -- let v4 = gotoStart v3 --v3b 
+                          -- let v5 = gotoEnd v4
+                          -- putStrLn $ "put cursor at end for buffer number " ++ show v
+                          -- exerciseBuffer (v - 1) v4
 
 
 
@@ -270,7 +358,7 @@ main = do putStr $ "enter a number : "
               q = cast line            
           putStrLn $ "you make " ++ show q 
           let v = mkState q
-          _ <- exerciseBuffer 10 v 
+          -- _ <- exerciseBuffer 10 v 
           putStrLn $ "all done"           
            
                      
