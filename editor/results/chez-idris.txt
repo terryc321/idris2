@@ -1,0 +1,57 @@
+ (main) ~/code/idris2/editor$ echo 1000000 | time ./build/exec/prog 
+enter a number please : you make 1000000
+before : 1000000
+after : 1000001
+ok.we cycled.
+all done
+0.09user 0.06system 0:00.15elapsed 100%CPU (0avgtext+0avgdata 118904maxresident)k
+0inputs+0outputs (0major+37192minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ echo 2000000 | time ./build/exec/prog 
+enter a number please : you make 2000000
+before : 2000000
+after : 2000001
+ok.we cycled.
+all done
+0.16user 0.09system 0:00.25elapsed 99%CPU (0avgtext+0avgdata 182104maxresident)k
+0inputs+0outputs (0major+65430minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ echo 4000000 | time ./build/exec/prog 
+enter a number please : you make 4000000
+before : 4000000
+after : 4000001
+ok.we cycled.
+all done
+0.37user 0.13system 0:00.50elapsed 100%CPU (0avgtext+0avgdata 389128maxresident)k
+0inputs+0outputs (0major+130473minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ echo 6000000 | time ./build/exec/prog 
+enter a number please : you make 6000000
+before : 6000000
+after : 6000001
+ok.we cycled.
+all done
+0.58user 0.17system 0:00.76elapsed 99%CPU (0avgtext+0avgdata 566848maxresident)k
+0inputs+0outputs (0major+179228minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ echo 8000000 | time ./build/exec/prog 
+enter a number please : you make 8000000
+before : 8000000
+after : 8000001
+ok.we cycled.
+all done
+0.70user 0.22system 0:00.93elapsed 100%CPU (0avgtext+0avgdata 674832maxresident)k
+0inputs+0outputs (0major+225966minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ echo 10000000 | time ./build/exec/prog 
+enter a number please : you make 10000000
+before : 10000000
+after : 10000001
+ok.we cycled.
+all done
+0.96user 0.29system 0:01.26elapsed 99%CPU (0avgtext+0avgdata 965456maxresident)k
+0inputs+0outputs (0major+311744minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ echo 15000000 | time ./build/exec/prog 
+enter a number please : you make 15000000
+before : 15000000
+after : 15000001
+ok.we cycled.
+all done
+1.45user 0.39system 0:01.84elapsed 99%CPU (0avgtext+0avgdata 1257432maxresident)k
+0inputs+0outputs (0major+412596minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ 

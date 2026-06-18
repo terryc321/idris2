@@ -1,0 +1,47 @@
+enter a number please : you make 1000000
+before : 1000000
+after : 1000001
+ok.we cycled.
+all done
+0.09user 0.06system 0:00.15elapsed 100%CPU (0avgtext+0avgdata 119076maxresident)k
+0inputs+0outputs (0major+37190minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ echo 2000000 | time ./build/exec/prog
+enter a number please : you make 2000000
+before : 2000000
+after : 2000001
+ok.we cycled.
+all done
+0.17user 0.07system 0:00.24elapsed 100%CPU (0avgtext+0avgdata 183516maxresident)k
+0inputs+0outputs (0major+67098minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ echo 4000000 | time ./build/exec/prog
+enter a number please : you make 4000000
+before : 4000000
+after : 4000001
+ok.we cycled.
+all done
+0.38user 0.14system 0:00.53elapsed 100%CPU (0avgtext+0avgdata 389468maxresident)k
+0inputs+0outputs (0major+130528minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ echo 6000000 | time ./build/exec/prog
+enter a number please : you make 6000000
+before : 6000000
+after : 6000001
+ok.we cycled.
+all done
+0.64user 0.17system 0:00.82elapsed 99%CPU (0avgtext+0avgdata 567264maxresident)k
+0inputs+0outputs (0major+179340minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ echo 8000000 | time ./build/exec/prog
+enter a number please : you make 8000000
+before : 8000000
+after : 8000001
+ok.we cycled.
+all done
+0.76user 0.24system 0:01.01elapsed 99%CPU (0avgtext+0avgdata 674720maxresident)k
+0inputs+0outputs (0major+225773minor)pagefaults 0swaps
+ (main) ~/code/idris2/editor$ echo 10000000 | time ./build/exec/prog
+enter a number please : you make 10000000
+before : 10000000
+after : 10000001
+ok.we cycled.
+all done
+1.05user 0.29system 0:01.35elapsed 99%CPU (0avgtext+0avgdata 965124maxresident)k
+0inputs+0outputs (0major+310749minor)pagefaults 0swaps
