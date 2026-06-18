@@ -207,15 +207,18 @@ entry n = do let mfin = F.natToFin n
 
 --}
 
+
 exerciseBuffer : {n : Nat} -> Integer -> State n -> IO () 
 exerciseBuffer 0 _  = putStrLn ""
 exerciseBuffer v st = do  let v1 = gotoEnd st 
-                          let v2 = gotoStart st   
-                          let v3 = gotoEnd st
-                          let v4 = gotoStart st 
-                          let v5 = gotoEnd st
+                          let v2 = gotoStart v1 
+                          -- let v2b = Editor.insertAt v2 2 'a'
+                          let v3 = gotoEnd v2 --v2b
+                          -- let v3b = Editor.insertAt 3 v3 'a'                          
+                          let v4 = gotoStart v3 --v3b 
+                          let v5 = gotoEnd v4
                           putStrLn $ "put cursor at end for buffer number " ++ show v
-                          exerciseBuffer (v - 1) st 
+                          exerciseBuffer (v - 1) v4
 
 
 
@@ -260,15 +263,15 @@ test5 = do putStr $ "enter a number : "
            putStrLn $ "all done"           
            
 
-test6 : IO () 
-test6 = do putStr $ "enter a number : "
-           line <- getLine 
-           let q : Nat 
-               q = cast line            
-           putStrLn $ "you make " ++ show q 
-           let v = mkState q
-           _ <- exerciseBuffer 100 v 
-           putStrLn $ "all done"           
+main : IO () 
+main = do putStr $ "enter a number : "
+          line <- getLine 
+          let q : Nat 
+              q = cast line            
+          putStrLn $ "you make " ++ show q 
+          let v = mkState q
+          _ <- exerciseBuffer 10 v 
+          putStrLn $ "all done"           
            
                      
                                                                
