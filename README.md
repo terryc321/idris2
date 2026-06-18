@@ -1,6 +1,48 @@
 
 # idris2
 
+Lets not be dramatic about writing idris2 code but is it very painful. accept it.
+
+the editor interaction with emacs is nowhere near sufficiently competent to guide 
+the user through the minefield of half haskell / half idris compile time / half idris run time 
+
+the system seems ambivalent to whether it helps or not.
+
+Lets try to model a simplistic text editor one buffer , one cursor where the text will be inserted or deleted.
+
+A string buffer , similar to what emacs might 'conceptually' use . a list of characters
+and an index. this being idris we tried to be more specific using some of the idris types available.
+we called the list of characters a Vect , a list of known length of a certain type , in this case Char 
+meaning character, hopefully thats unicode done and dusted. 
+
+the cursor is the index into the string buffer we used the Fin type for this , it has a peculiar
+definition meaning Fin n is an index from 0 to < n , thats strictly less than n , 
+so for our string buffer of length n , our cursor is defined as Fin (S n) , 
+
+lets illustrate this 
+
+```
+  a b c 
+  0 1 2 3
+  | | | |
+
+let our string be "abc" it has 3 characters 
+awkward indices are labelled 0=a 1=b and 2=c  
+indice 3 is out of bounds of the 'string' but allows our cursor | to be at the end of the text 
+
+```
+
+we have tried to define a State which has a known list of characters of definite length and 
+a cursor into that list. cursor is defined as Fin (S n) for a Vect of length n . 
+what this means is the cursor is finite and has an index strictly less than (S n) the successor of n , 
+peano arithmetic speak . 
+
+after this we proceeded to move the cursor around an initial state , we were able to build up the 
+
+
+
+a statically known Vect n 'a'
+
 # editor 
 [editor notes](editor/)
 

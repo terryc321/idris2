@@ -17,6 +17,8 @@ import Data.Vect as V
 import System.Clock as C 
 import Prelude
 import Data.String as S 
+import Data.So 
+import Decidable.Decidable
 
 
 -- STATE
@@ -281,19 +283,169 @@ mutual
 
 
 
-{--
+-- -- 'decide' can check relations like LTE (Less Than or Equal)
+-- safeHead : (n : Nat) -> (xs : Vect (S n) a) -> a
+-- safeHead n xs = head xs
+--
+-- none of this works or compiles in idris2 ??
+--
+-- -- Suppose we have a dynamic length check
+-- maybeHead : (n : Nat) -> (xs : List a) -> Maybe a
+-- maybeHead n xs with (decide {p = N.LTE} n (length xs))
+--   maybeHead n xs | (Yes prf) = 
+--       -- We have a proof 'prf' that n <= length xs.
+--       -- We can now safely convert List to Vect and take the head.
+--       -- (Simplified logic for demonstration)
+--       Just (head (fromList xs)) 
+--   maybeHead n xs | (No _) = Nothing
+
+
+
+{-- 
+
+this actually works ! 
 
 growMe : {n : Nat} -> State n -> IO ()
-growMe st = 
- let con = (V.length (text st)) >= 2 
- in case con of 
-   False => putStrLn "too small"
-   True  => do let st' = Editor.insertAt st (FS FZ) 'a'
-               putStrLn "inserted"
-               
+growMe st with (V.length (text st) >= 3)
+  growMe st | True  = putStrLn "ok"
+  growMe st | False = putStrLn "not ok"
 --}
 
 
+{--
+indexToFin : {n : Nat} -> (i : Nat) -> State n -> Maybe (Fin (S n))
+indexToFin i st = 
+           let r = V.length (text st) 
+           in F.natToFin i (S r)
+--}
+                  
+indexToFin : {n : Nat} -> (i : Nat) -> State n -> Maybe (Fin (S n))
+indexToFin {n} i st = F.natToFin i (S n)
+
+growMe : {n : Nat} -> State n -> IO ()
+growMe {n} st = case indexToFin 2 st of 
+                     Nothing => do putStrLn "oh no"                                   
+                     Just fin => do let st' = Editor.insertAt st fin 'a'
+                                    putStrLn "inserted"
+                                    
+     
+
+exerciseBuffer : {n : Nat} -> Integer -> State n -> IO () 
+exerciseBuffer 0 _  = putStrLn ""
+exerciseBuffer v st = do  let v1 = gotoEnd st 
+                          let v2 = gotoStart v1 
+                          growMe v2
+                          let v4 = gotoStart v2
+                          let v5 = gotoEnd v4
+                          putStrLn "ok.we cycled."
+                              
+                              
+     
+{--
+-- find insertAt and try use indexToFin ??
+growMe : {n : Nat} -> State n -> IO State
+growMe {n} st = case indexToFin 2 st of 
+                     Nothing => do putStrLn "oh no"
+                                   return st
+                     Just fin => do let st' = Editor.insertAt st fin 'a'
+                                    putStrLn "inserted"
+                                    return st'
+
+exerciseBuffer : {n : Nat} -> Integer -> State n -> IO () 
+exerciseBuffer 0 _  = putStrLn ""
+exerciseBuffer v st = do  let v1 = gotoEnd st 
+                          let v2 = gotoStart v1 
+                          v3 <- Editor.growMe v2
+                          let v4 = gotoStart v3
+                          let v5 = gotoEnd v4
+                          putStrLn "ok.we cycled."
+                          
+--}     
+                          
+
+
+
+{--
+growMe : {n : Nat} -> State n -> IO ()
+growMe st with (V.length (text st) >= 3)
+  growMe st | False = putStrLn "not ok"
+  growMe st | True  = do let st' = Editor.insertAt st 2 'a'
+                         putStrLn "inserted"
+--}
+
+
+{--  FS FZ is the wrong type ! 
+λΠ> :t F.FS F.FZ 
+FS FZ : Fin (S (S ?k))
+
+growMe : {n : Nat} -> State n -> IO ()
+growMe st with (V.length (text st) >= 3)
+  growMe st | False = putStrLn "not ok"
+  growMe st | True  = do let st' = Editor.insertAt st (FS FZ) 'a'
+                         putStrLn "inserted"
+--}
+
+
+{--
+
+ let y = 3 in
+ let con : Dec (LTE 3 n)
+     con = Data.So.decSo 
+    in case con of 
+       False => putStrLn "too small"
+       True  => do let st' = Editor.insertAt st (FZ) 'a'
+                   putStrLn "inserted"
+--}
+
+
+
+--
+{--
+growMe : {n : Nat} -> State n -> IO ()
+growMe st with (V.length (text st) >= 3)
+growMe st | True  = putStrLn "ok"
+growMe st | False = putStrLn "not ok"
+ 
+ let y = 3 in
+ let con : Dec (GTE n 3) 
+     con = Data.So (V.length (text st)) >= y
+    in case con of 
+       False => putStrLn "too small"
+       True  => do let st' = Editor.insertAt st (FZ) 'a'
+                   putStrLn "inserted"
+
+--}
+
+
+
+               
+{--
+
+
+growMe : {n : Nat} -> State n -> IO ()
+growMe st = 
+ let y = 3 in
+ let con : Bool
+     con = (V.length (text st)) >= y
+    in case con of 
+       False => putStrLn "too small"
+       True  => do let st' = Editor.insertAt st (FZ) 'a'
+                   putStrLn "inserted"
+
+
+
+growMe : {n : Nat} -> State n -> IO ()
+growMe st = 
+ let y = 2 -- why ? y 
+ in let con = (V.length (text st)) >= fromIntegral y
+    in case con of 
+       False => putStrLn "too small"
+       True  => do let st' = Editor.insertAt st FZ 'a'
+                   putStrLn "inserted"
+--}
+
+
+                            
 
 
 {--
@@ -371,7 +523,7 @@ main = do putStr $ "enter a number : "
               q = cast line            
           putStrLn $ "you make " ++ show q 
           let v = mkState q
-          -- _ <- exerciseBuffer 10 v 
+          _ <- exerciseBuffer 10 v 
           putStrLn $ "all done"           
            
                      
