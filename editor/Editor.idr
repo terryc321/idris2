@@ -317,28 +317,93 @@ indexToFin : {n : Nat} -> (i : Nat) -> State n -> Maybe (Fin (S n))
 indexToFin i st = 
            let r = V.length (text st) 
            in F.natToFin i (S r)
+           
+           
+
+main : IO () 
+main = do putStr $ "enter a number please : "
+          line <- getLine 
+          let q : Nat 
+              q = cast line            
+          putStrLn $ "you make " ++ show q 
+          let v = mkState q
+          _ <- exerciseBuffer 10 v 
+          putStrLn $ "all done"           
+           
 --}
                   
 indexToFin : {n : Nat} -> (i : Nat) -> State n -> Maybe (Fin (S n))
 indexToFin {n} i st = F.natToFin i (S n)
 
-growMe : {n : Nat} -> State n -> IO ()
+{-- this compiles ok 
+growMe : {n : Nat} -> State n -> IO () -- Either State State)
 growMe {n} st = case indexToFin 2 st of 
                      Nothing => do putStrLn "oh no"                                   
+                                   -- return (Left st)
                      Just fin => do let st' = Editor.insertAt st fin 'a'
                                     putStrLn "inserted"
+                                    -- return (Right st')
                                     
-     
+                                    
+* lesson * : pure replaces return 
+
+
+                                                                        
+--}     
+
+{--
+countX : Vect n Char -> Nat
+countX xs =
+  foldr step Z xs
+  where
+    step : Char -> Nat -> Nat
+    step ch acc =
+      if ch == 'x'
+         then S acc
+         else acc
+--}
+
+-- with ai slop help 
+countX : Vect n Char -> Nat
+countX =
+  foldr
+    (\ch, acc => if ch == 'x' then S acc else acc)
+    Z
+
+countStateX : State n -> Nat
+countStateX st = countX (text st)
+
+
+-- countTheXs : {n : Nat} -> State n -> Nat 
+-- countTheXs 
+
+-- if it grows then size is expanded by one element --  (S n)
+
+growMe : {n : Nat} -> State n -> IO (Maybe (State (S n)))
+growMe {n} st = case indexToFin 2 st of 
+                     Nothing => do  putStrLn "insert failed !"
+                                    pure Nothing
+                     Just fin => do putStrLn $ "before : " ++ show (countStateX st)
+                                    let st' = Editor.insertAt st fin 'x'
+                                    putStrLn $ "after : " ++ show (countStateX st')
+                                    pure (Just st')
+
 
 exerciseBuffer : {n : Nat} -> Integer -> State n -> IO () 
 exerciseBuffer 0 _  = putStrLn ""
 exerciseBuffer v st = do  let v1 = gotoEnd st 
                           let v2 = gotoStart v1 
-                          growMe v2
-                          let v4 = gotoStart v2
-                          let v5 = gotoEnd v4
-                          putStrLn "ok.we cycled."
-                              
+                          tmp <- growMe v2 
+                          case tmp of 
+                               Nothing =>  do let v4 = gotoStart v2
+                                              let v5 = gotoEnd v4
+                                              putStrLn "ok.we cycled."
+                                              exerciseBuffer (v-1) v5     
+                               Just st' => do let v4 = gotoStart st'
+                                              let v5 = gotoEnd v4
+                                              putStrLn "ok.we cycled."
+                                              exerciseBuffer (v-1) v5     
+
                               
      
 {--
@@ -517,7 +582,7 @@ test5 = do putStr $ "enter a number : "
            
 
 main : IO () 
-main = do putStr $ "enter a number : "
+main = do putStr $ "enter a number please : "
           line <- getLine 
           let q : Nat 
               q = cast line            
