@@ -15,7 +15,7 @@ import Data.Nat as N
 import Data.Fin as F
 import Data.Vect as V 
 import System.Clock as C 
-
+import Prelude
 
 -- STATE
 -- text is some container of length n , cursor is a finite natural number 
@@ -131,7 +131,10 @@ natDec2 Z _   = Z
 natDec2 n Z   = n 
 natDec2 (S n) (S m)  = natDec2 n m 
 
-
+-- just string them along 
+mkNat : Integer -> Nat 
+mkNat 0 = Z 
+mkNat n = if n < 0 then mkNat 0 else S (mkNat (n- 1))
 
 
 {--
@@ -172,19 +175,113 @@ lastFin {n = (S k)} = FS lastFin
 gotoEnd : {n : Nat} -> State n -> State n   
 gotoEnd (MkState t c) = MkState t lastFin 
 
-
-largeText = V.replicate 1000 'x'
-largeState = MkState largeText 0 
+gotoStart : {n : Nat} -> State n -> State n   
+gotoStart (MkState t _) = MkState t 0 
 
 
 {-- 
+a " large buffer " 
+simply a list of 1000 'x' s , not important , only exercise 
+the gotoEnd and gotoStart 
 our main function
 
 idris2 MyFile.idr -o myprog
 ./build/exec/myprog
 --}
+
+largeText = Data.Vect.replicate 10 'x'
+largeState = MkState largeText 0 
+
+myVal : Integer 
+myVal = cast "123" 
+
+
+{-- 
+entry : {n : Nat } -> Fin (S n)
+entry n = do let mfin = F.natToFin n
+             case mfin of 
+               Just v => v
+               Nothing => ??
+
+
+
+exerciseBuffer : Nat -> Fin (S n) -> IO () 
+exerciseBuffer Z     k   = putStrLn ""
+exerciseBuffer a     k   = do let st = MkState (Data.Vect.replicate a 'x') a  
+                              let v  = gotoEnd st 
+                              let v2 = gotoStart st   
+                              let v3 = gotoEnd st
+                              let v4 = gotoStart st 
+                              let v5 = gotoEnd st
+                              putStrLn $ "put cursor at end for buffer number " ++ show n
+                              exerciseBuffer r k 
+--}
+
+
+
+test = let n : Nat 
+           n = 100 
+       in n 
+       
+test2 : IO () 
+test2 = do let n : Nat 
+               n = 100 
+           putStrLn $ "you make " ++ show n 
+
+test3 : IO () 
+test3 = do putStr $ "enter a number : "
+           line <- getLine 
+           let n : Nat 
+               n = cast line 
+           putStrLn $ "you make " ++ show n 
+           
+           
+                                 
+           
+
+{--
+-- the entry point 
 main : IO ()
-main = putStrLn "hello"
+main = do putStrLn "hello"          
+          let n : Nat 
+              n = 100
+          case F.natToFin n n of 
+           Nothing => putStr "something wrong"
+           Just v => do let st = MkState (Data.Vect.replicate n 'x') (Fin n)
+                        putStrLn "ok finished"
+                        
+--}          
+          
+
+                                                                                                                    
+-- -- the entry point 
+-- main : IO ()
+-- main = do putStrLn "hello"          
+--           let n = 10000
+--           let st = MkState (Data.Vect.replicate n 'x') n
+--           line <- getLine 
+--           let v : Nat 
+--               v = Prelude.cast "10"
+--           case v of 
+--            Just n => 
+--             do exerciseBuffer 10 n
+--                putStrLn "done"
+--            Nothing => 
+--             putStrLn "fail , couldnt read the string"
+                                
+
+                    
+
+{--
+main : IO ()
+main = do putStrLn "hello"
+          putStr "Please enter size of buffer to replicate : "
+          str <- getLine 
+          case cast str of 
+               Just n => do putStr $ "buffer size " ++ show n ++ " requested"                           exerciseBuffer n
+                         putStrLn "all completed"
+               Nothing => do putStrLn "dont be a dummy" 
+--}          
 
     
    
